@@ -15,22 +15,21 @@ void get_URL( const string& host, const string& path )
   // debug( "get_URL() function not yet implemented" );
   TCPSocket sock;
 
-  sock.connect(Address(host, "http"));
+  sock.connect( Address( host, "http" ) );
   string request;
   request += "GET " + path + " HTTP/1.1\r\n";
   request += "Host: " + host + "\r\n";
   request += "Connection: close\r\n";
   request += "\r\n";
 
-  sock.write_all(request);
+  sock.write_all( request );
 
   string response_buffer;
-  while (!sock.eof()) {
-      sock.read(response_buffer);
-      cout << response_buffer;
-      response_buffer.clear();
+  while ( !sock.eof() ) {
+    sock.read( response_buffer );
+    cout << response_buffer;
+    response_buffer.clear();
   }
-  
 }
 } // namespace
 

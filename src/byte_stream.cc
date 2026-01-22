@@ -5,21 +5,19 @@
 
 using namespace std;
 
-ByteStream::ByteStream( uint64_t capacity )
-    : capacity_( capacity ), buffer_( string() ) {}
+ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity ), buffer_( string() ) {}
 
 // Push data to stream, but only as much as available capacity allows.
-void Writer::push( string data )
+void Writer::push( const string& data )
 {
   // Your code here (and in each method below)
-  uint64_t remaining = capacity_ - buffer_.size();
-  if ( remaining == 0 || data.empty() )
-  {
+  const uint64_t remaining = capacity_ - buffer_.size();
+  if ( remaining == 0 || data.empty() ) {
     return;
   }
-  uint64_t write_len = std::min( static_cast<uint64_t>( data.size() ), remaining );
+  const uint64_t write_len = std::min( static_cast<uint64_t>( data.size() ), remaining );
   buffer_.append( data.substr( 0, write_len ) );
-  bytes_pushed_ += write_len;  
+  bytes_pushed_ += write_len;
   debug( "Writer::push({})", data );
 }
 
@@ -41,7 +39,7 @@ bool Writer::is_closed() const
 uint64_t Writer::available_capacity() const
 {
   debug( "Writer::available_capacity()" );
-  uint64_t available = capacity_ - buffer_.size();
+  const uint64_t available = capacity_ - buffer_.size();
   return available; // Your code here.
 }
 
@@ -49,7 +47,6 @@ uint64_t Writer::available_capacity() const
 uint64_t Writer::bytes_pushed() const
 {
   debug( "Writer::bytes_pushed()" );
-  
   return bytes_pushed_; // Your code here.
 }
 
@@ -60,18 +57,17 @@ uint64_t Writer::bytes_pushed() const
 string_view Reader::peek() const
 {
   debug( "Reader::peek()" );
-  return string_view(buffer_); // Your code here.
+  return string_view( buffer_ ); // Your code here.
 }
 
 // Remove `len` bytes from the buffer.
 void Reader::pop( uint64_t len )
 {
   debug( "Reader::pop({})", len );
-  if ( len == 0 || buffer_.empty() )
-  {
+  if ( len == 0 || buffer_.empty() ) {
     return;
   }
-  uint64_t pop_len = std::min( len, static_cast<uint64_t>( buffer_.size() ) );
+  const uint64_t pop_len = std::min( len, static_cast<uint64_t>( buffer_.size() ) );
   buffer_.erase( 0, pop_len );
   bytes_popped_ += pop_len;
 }
@@ -80,7 +76,7 @@ void Reader::pop( uint64_t len )
 bool Reader::is_finished() const
 {
   debug( "Reader::is_finished()" );
-  bool finished = writer_closed_ && buffer_.empty() && !has_error();
+  const bool finished = writer_closed_ && buffer_.empty() && !has_error();
   return finished; // Your code here.
 }
 
@@ -88,7 +84,7 @@ bool Reader::is_finished() const
 uint64_t Reader::bytes_buffered() const
 {
   debug( "Reader::bytes_buffered()" );
-  uint64_t buffered = buffer_.size();
+  const uint64_t buffered = buffer_.size();
   return buffered; // Your code here.
 }
 

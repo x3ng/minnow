@@ -28,7 +28,7 @@ protected:
   std::string buffer_;
   uint64_t bytes_pushed_ = 0;
   uint64_t bytes_popped_ = 0;
-  bool writer_closed_ = false;  
+  bool writer_closed_ = false;
 };
 
 class Writer : public ByteStream
