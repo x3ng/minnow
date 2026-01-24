@@ -8,7 +8,7 @@ using namespace std;
 ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity ), buffer_( string() ) {}
 
 // Push data to stream, but only as much as available capacity allows.
-void Writer::push( const string& data )
+void Writer::push( string data )
 {
   // Your code here (and in each method below)
   const uint64_t remaining = capacity_ - buffer_.size();
