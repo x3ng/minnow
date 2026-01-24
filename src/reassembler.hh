@@ -2,11 +2,14 @@
 
 #include "byte_stream.hh"
 
+#include <cstdint>
+#include <map>
+
 class Reassembler
 {
 public:
   // Construct Reassembler to write into given ByteStream.
-  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {}
+  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ), pending_() {}
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.
@@ -43,4 +46,8 @@ public:
 
 private:
   ByteStream output_;
+  std::map<size_t, std::string> pending_;
+  uint64_t next_write_index_ = 0;
+  bool is_last_received_ = false;
+  uint64_t last_index_ = 0;
 };
