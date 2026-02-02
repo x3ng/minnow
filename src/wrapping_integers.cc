@@ -6,7 +6,7 @@ using namespace std;
 Wrap32 Wrap32::wrap( uint64_t n, Wrap32 zero_point )
 {
   // Your code here.
-  debug( "wrap( {}, {} ) called", n, zero_point.raw_value_ );
+  // debug( "wrap( {}, {} ) called", n, zero_point.raw_value_ );
   const auto ln = static_cast<uint32_t>( n );
   return Wrap32( zero_point + ln );
 }
@@ -14,7 +14,7 @@ Wrap32 Wrap32::wrap( uint64_t n, Wrap32 zero_point )
 uint64_t Wrap32::unwrap( Wrap32 zero_point, uint64_t checkpoint ) const
 {
   // Your code here.
-  debug( "unwrap( {}, {} ) called", zero_point.raw_value_, checkpoint );
+  // debug( "unwrap( {}, {} ) called", zero_point.raw_value_, checkpoint );
   auto ln = static_cast<uint32_t>( checkpoint );
   ln += zero_point.raw_value_;
   const uint32_t sub = this->raw_value_ - ln;
