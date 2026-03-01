@@ -7,6 +7,8 @@
 #include <memory>
 #include <queue>
 
+#include <unordered_map>
+
 // A "network interface" that connects IP (the internet layer, or network layer)
 // with Ethernet (the network access layer, or link layer).
 
@@ -82,4 +84,32 @@ private:
 
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+
+  struct ARPEntry {
+    EthernetAddress ethernet_address;
+    size_t time_since_last_tick;
+
+    ARPEntry(EthernetAddress ea, size_t t):
+        ethernet_address(ea),
+        time_since_last_tick(t)
+    {};
+
+    ARPEntry():
+      ethernet_address{},
+      time_since_last_tick(0)
+    {};
+  };
+
+  std::unordered_map<uint32_t, ARPEntry> _arp_table{};
+
+  struct PendingEntry {
+    std::vector<InternetDatagram> datagrams;
+    size_t arp_time_out = 0;
+
+    explicit PendingEntry():
+      datagrams{}
+    {};
+  };
+
+  std::unordered_map<uint32_t, PendingEntry> _pending_datagrams{};
 };
