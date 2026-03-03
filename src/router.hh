@@ -34,4 +34,18 @@ public:
 private:
   // The router's collection of network interfaces
   std::vector<std::shared_ptr<NetworkInterface>> interfaces_ {};
+
+  struct TrieNode {
+    std::array<std::unique_ptr<TrieNode>, 2> child = {nullptr, nullptr};
+    std::optional<Address> next_hop;
+    std::optional<size_t> interface_num;
+
+    TrieNode():
+      child({nullptr, nullptr}),
+      next_hop(std::nullopt),
+      interface_num(std::nullopt) {};
+
+  };
+
+  std::unique_ptr<TrieNode> trie_root_ = std::make_unique<TrieNode>();
 };

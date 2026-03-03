@@ -20,11 +20,64 @@ void Router::add_route( const uint32_t route_prefix,
        << static_cast<int>( prefix_length ) << " => " << ( next_hop.has_value() ? next_hop->ip() : "(direct)" )
        << " on interface " << interface_num << "\n";
 
-  debug( "unimplemented add_route() called" );
+  debug( "add_route() called" );
+  if (prefix_length > 32) {
+    return;
+  }
+  TrieNode* ctn = trie_root_.get();
+  uint32_t srp = route_prefix;
+  const uint32_t MASK = 1U << 31;
+  for (int p=0; p<prefix_length; ++p) {
+    bool c = (srp & MASK) == MASK;
+    if (!ctn->child[c]) {
+      ctn->child[c] = std::make_unique<TrieNode>();
+    }
+    ctn = ctn->child[c].get();
+    srp <<= 1;
+  }
+  ctn->next_hop = next_hop;
+  ctn->interface_num = interface_num;
 }
 
 // Go through all the interfaces, and route every incoming datagram to its proper outgoing interface.
 void Router::route()
 {
-  debug( "unimplemented route() called" );
+  //debug( "route() called" );
+  const uint32_t MASK = 1U << 31;
+  for (auto& itf: interfaces_) {
+    auto& recv_dats = itf->datagrams_received();
+    while (recv_dats.size()) {
+      auto crd = recv_dats.front();
+      recv_dats.pop();
+      uint8_t& ttl = crd.header.ttl; 
+      if (ttl <= 1) {
+        continue;
+      }
+      uint32_t dst_ip = crd.header.dst;
+      int p = 0;
+      TrieNode* ctn = trie_root_.get();
+      TrieNode* lmn = nullptr;
+      while (p++<32 && ctn) {
+        lmn = ctn->interface_num.has_value() ? ctn : lmn;
+        bool cp = (dst_ip & MASK) == MASK;
+        ctn = ctn->child[cp].get();
+        dst_ip <<= 1;
+      }
+      if (lmn) {
+        auto tif = interface(lmn->interface_num.value());
+        if (!tif) {
+          continue;
+        }
+        Address nh;
+        if (lmn->next_hop.has_value()) {
+          nh = lmn->next_hop.value();
+        } else {
+          nh = Address::from_ipv4_numeric(crd.header.dst);
+        }
+        ttl--;
+        crd.header.compute_checksum();
+        tif->send_datagram(crd, nh);
+      }
+    }
+  }
 }
