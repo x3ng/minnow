@@ -120,5 +120,4 @@ void TCPSender::tick( uint64_t ms_since_last_tick, const TransmitFunction& trans
   } else {
     cur_rto_ = 0;
   }
-  push( transmit );
 }
